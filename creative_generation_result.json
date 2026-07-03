@@ -1,0 +1,60 @@
+{
+  "generation_timestamp": "2026-07-03T15:14:18.822255",
+  "campaigns_processed": 1,
+  "total_creatives_generated": 5,
+  "results": [
+    {
+      "campaign_id": "campaign_002",
+      "campaign_name": "SaaS - Lead Gen",
+      "generated_count": 5,
+      "generated_at": "2026-07-03T15:14:18.822255",
+      "creatives": [
+        {
+          "id": "campaign_002_creative_001",
+          "type": "ugc",
+          "hook": "Voc\u00ea est\u00e1 desperdi\u00e7ando dinheiro em marketing?",
+          "copy": "Descobre como aumentar suas convers\u00f5es sem gastar mais",
+          "cta": "Veja agora",
+          "angle": "Fear of missing out",
+          "image_prompt": "Professional showing conversion metrics going up, casual style, bright colors"
+        },
+        {
+          "id": "campaign_002_creative_002",
+          "type": "ugc",
+          "hook": "3 erros que toda empresa comete (e como corrigir)",
+          "copy": "Framework simples que 500+ empresas usam todo m\u00eas",
+          "cta": "Descobrir agora",
+          "angle": "Educational value",
+          "image_prompt": "Laptop showing analytics dashboard, minimalist design, trending aesthetic"
+        },
+        {
+          "id": "campaign_002_creative_003",
+          "type": "testimonial",
+          "hook": "Triplicou suas convers\u00f5es? Veja como ele fez...",
+          "copy": "CEO de startup conta sua hist\u00f3ria de sucesso (e voc\u00ea pode replicar)",
+          "cta": "Veja o case",
+          "angle": "Social proof",
+          "image_prompt": "Happy founder with team in background, professional headshot, warm lighting"
+        },
+        {
+          "id": "campaign_002_creative_004",
+          "type": "problem_solution",
+          "hook": "ANTES: Time gastando 20h/semana em tarefas repetitivas",
+          "copy": "DEPOIS: Automa\u00e7\u00e3o inteligente que libera tempo pro que importa",
+          "cta": "Come\u00e7ar teste gr\u00e1tis",
+          "angle": "Efficiency gain",
+          "image_prompt": "Before/after split showing stressed vs relaxed team member, clean design"
+        },
+        {
+          "id": "campaign_002_creative_005",
+          "type": "curiosity",
+          "hook": "Big tech companies pagam milh\u00f5es por esse simples truque",
+          "copy": "Agora voc\u00ea consegue usar gr\u00e1tis (t\u00e9cnica revelada abaixo)",
+          "cta": "Desbloquear t\u00e9cnica",
+          "angle": "Scarcity/Exclusivity",
+          "image_prompt": "Mysterious sealed envelope or locked door, modern illustration, trending"
+        }
+      ]
+    }
+  ]
+}

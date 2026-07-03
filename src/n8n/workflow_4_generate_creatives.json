@@ -1,0 +1,167 @@
+{
+  "name": "WORKFLOW 4: Generate Creatives (FASE 5)",
+  "description": "Gerar criativos automaticamente quando performance cai",
+  "nodes": [
+    {
+      "parameters": {
+        "trigger": "webhook",
+        "waitForWebhook": true
+      },
+      "name": "Listen for Underperformance",
+      "type": "n8n-nodes-base:manualTrigger",
+      "typeVersion": 1,
+      "position": [100, 200]
+    },
+    {
+      "parameters": {
+        "url": "https://{{ $env.SUPABASE_URL }}/rest/v1/campaigns",
+        "method": "GET",
+        "authentication": "n8n-nodes-base:httpHeaderAuth",
+        "qs": {
+          "status": "eq.ACTIVE"
+        }
+      },
+      "name": "Get Active Campaigns",
+      "type": "n8n-nodes-base:httpRequest",
+      "typeVersion": 1,
+      "position": [300, 200]
+    },
+    {
+      "parameters": {
+        "condition": "CTR < 1% OR CPA > target"
+      },
+      "name": "Filter Underperformers",
+      "type": "n8n-nodes-base:filter",
+      "typeVersion": 1,
+      "position": [500, 200]
+    },
+    {
+      "parameters": {
+        "command": "python3 src/scripts/creative_generator.py"
+      },
+      "name": "Generate Creatives",
+      "type": "n8n-nodes-base:executeCommand",
+      "typeVersion": 1,
+      "position": [700, 200]
+    },
+    {
+      "parameters": {
+        "url": "https://{{ $env.SUPABASE_URL }}/rest/v1/creatives",
+        "method": "POST",
+        "authentication": "n8n-nodes-base:httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "creative_data",
+              "value": "={{ $json.creatives }}"
+            }
+          ]
+        }
+      },
+      "name": "Save Creatives",
+      "type": "n8n-nodes-base:httpRequest",
+      "typeVersion": 1,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "url": "https://api.ideogram.ai/generate",
+        "method": "POST",
+        "authentication": "n8n-nodes-base:apiKeyAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompts",
+              "value": "={{ $json.image_prompts }}"
+            }
+          ]
+        }
+      },
+      "name": "Generate Images (Ideogram)",
+      "type": "n8n-nodes-base:httpRequest",
+      "typeVersion": 1,
+      "position": [1100, 200]
+    },
+    {
+      "parameters": {
+        "channel": "#creatives",
+        "message": "🎨 {{ $json.generated_count }} new creatives generated for underperforming campaigns"
+      },
+      "name": "Notify Team",
+      "type": "n8n-nodes-base:slack",
+      "typeVersion": 1,
+      "position": [1300, 200]
+    }
+  ],
+  "connections": {
+    "Listen for Underperformance": {
+      "main": [
+        [
+          {
+            "node": "Get Active Campaigns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Active Campaigns": {
+      "main": [
+        [
+          {
+            "node": "Filter Underperformers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Underperformers": {
+      "main": [
+        [
+          {
+            "node": "Generate Creatives",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Creatives": {
+      "main": [
+        [
+          {
+            "node": "Save Creatives",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Creatives": {
+      "main": [
+        [
+          {
+            "node": "Generate Images (Ideogram)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Images (Ideogram)": {
+      "main": [
+        [
+          {
+            "node": "Notify Team",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true
+}

@@ -1,0 +1,117 @@
+{
+  "name": "WORKFLOW 1: Sync Ads Data (24h)",
+  "description": "FASE 2: Puxar dados de Meta e Google Ads automaticamente",
+  "nodes": [
+    {
+      "parameters": {
+        "expression": "{{ $now.toISO() }}"
+      },
+      "name": "Cron Trigger (24h)",
+      "type": "n8n-nodes-base:cron",
+      "typeVersion": 1,
+      "position": [100, 200],
+      "cronExpression": "0 6 * * *"
+    },
+    {
+      "parameters": {
+        "command": "python3 src/scripts/sync_meta_ads.py"
+      },
+      "name": "Run Meta Sync",
+      "type": "n8n-nodes-base:executeCommand",
+      "typeVersion": 1,
+      "position": [300, 100]
+    },
+    {
+      "parameters": {
+        "command": "python3 src/scripts/sync_google_ads.py"
+      },
+      "name": "Run Google Sync",
+      "type": "n8n-nodes-base:executeCommand",
+      "typeVersion": 1,
+      "position": [300, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://{{ $env.SUPABASE_URL }}/rest/v1/performance_logs",
+        "method": "POST",
+        "authentication": "n8n-nodes-base:httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "sync_data",
+              "value": "={{ $json.body }}"
+            }
+          ]
+        }
+      },
+      "name": "Save to Supabase",
+      "type": "n8n-nodes-base:httpRequest",
+      "typeVersion": 1,
+      "position": [500, 200]
+    },
+    {
+      "parameters": {
+        "email": "{{ $env.NOTIFICATION_EMAIL }}",
+        "subject": "✅ Ads Sync Completed",
+        "text": "Data from Meta and Google Ads synchronized successfully"
+      },
+      "name": "Send Email Notification",
+      "type": "n8n-nodes-base:emailSend",
+      "typeVersion": 1,
+      "position": [700, 200]
+    }
+  ],
+  "connections": {
+    "Cron Trigger (24h)": {
+      "main": [
+        [
+          {
+            "node": "Run Meta Sync",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Run Google Sync",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Meta Sync": {
+      "main": [
+        [
+          {
+            "node": "Save to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Google Sync": {
+      "main": [
+        [
+          {
+            "node": "Save to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Supabase": {
+      "main": [
+        [
+          {
+            "node": "Send Email Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true
+}

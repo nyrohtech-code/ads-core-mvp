@@ -1,0 +1,117 @@
+{
+  "name": "WORKFLOW 3: Execute Decisions (FASE 4)",
+  "description": "Executar decisões do Claude nas campanhas",
+  "nodes": [
+    {
+      "parameters": {
+        "trigger": "webhook",
+        "waitForWebhook": true
+      },
+      "name": "Wait for New Decisions",
+      "type": "n8n-nodes-base:manualTrigger",
+      "typeVersion": 1,
+      "position": [100, 200]
+    },
+    {
+      "parameters": {
+        "url": "https://{{ $env.SUPABASE_URL }}/rest/v1/ai_decisions",
+        "method": "GET",
+        "authentication": "n8n-nodes-base:httpHeaderAuth",
+        "qs": {
+          "status": "eq.PENDING",
+          "order": "created_at.desc"
+        }
+      },
+      "name": "Get Pending Decisions",
+      "type": "n8n-nodes-base:httpRequest",
+      "typeVersion": 1,
+      "position": [300, 200]
+    },
+    {
+      "parameters": {
+        "command": "python3 src/scripts/executor.py"
+      },
+      "name": "Execute Actions",
+      "type": "n8n-nodes-base:executeCommand",
+      "typeVersion": 1,
+      "position": [500, 200]
+    },
+    {
+      "parameters": {
+        "url": "https://{{ $env.SUPABASE_URL }}/rest/v1/execution_log",
+        "method": "POST",
+        "authentication": "n8n-nodes-base:httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "execution_result",
+              "value": "={{ $json }}"
+            }
+          ]
+        }
+      },
+      "name": "Log Execution",
+      "type": "n8n-nodes-base:httpRequest",
+      "typeVersion": 1,
+      "position": [700, 200]
+    },
+    {
+      "parameters": {
+        "channel": "#ads-execution",
+        "message": "⚡ Actions Executed\\nSuccessful: {{ $json.successful }}\\nFailed: {{ $json.failed }}"
+      },
+      "name": "Notify Results",
+      "type": "n8n-nodes-base:slack",
+      "typeVersion": 1,
+      "position": [900, 200]
+    }
+  ],
+  "connections": {
+    "Wait for New Decisions": {
+      "main": [
+        [
+          {
+            "node": "Get Pending Decisions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Pending Decisions": {
+      "main": [
+        [
+          {
+            "node": "Execute Actions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Actions": {
+      "main": [
+        [
+          {
+            "node": "Log Execution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Execution": {
+      "main": [
+        [
+          {
+            "node": "Notify Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true
+}

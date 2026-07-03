@@ -1,0 +1,56 @@
+{
+  "execution_timestamp": "2026-07-03T15:08:21.232105",
+  "total_decisions": 4,
+  "successful": 2,
+  "failed": 0,
+  "no_action": 2,
+  "results": [
+    {
+      "campaign_id": "campaign_001",
+      "campaign_name": "E-commerce - Black Friday",
+      "action": "KEEP",
+      "platform": "meta",
+      "executed_at": "2026-07-03T15:08:21.232105",
+      "status": "NO_ACTION_NEEDED",
+      "error": null
+    },
+    {
+      "campaign_id": "campaign_002",
+      "campaign_name": "SaaS - Lead Gen",
+      "action": "REDUCE_BID",
+      "platform": "meta",
+      "executed_at": "2026-07-03T15:08:21.232105",
+      "status": "SUCCESS",
+      "error": null,
+      "details": {
+        "action_type": "reduce_bids",
+        "reduction_factor": 0.9,
+        "affected_adsets": 3
+      }
+    },
+    {
+      "campaign_id": "google_campaign_001",
+      "campaign_name": "Search - Product Launch",
+      "action": "KEEP",
+      "platform": "google",
+      "executed_at": "2026-07-03T15:08:21.232105",
+      "status": "NO_ACTION_NEEDED",
+      "error": null
+    },
+    {
+      "campaign_id": "google_campaign_002",
+      "campaign_name": "Shopping - E-commerce",
+      "action": "SCALE_20",
+      "platform": "google",
+      "executed_at": "2026-07-03T15:08:21.232105",
+      "status": "SUCCESS",
+      "error": null,
+      "details": {
+        "action_type": "scale",
+        "scale_factor": 1.2,
+        "previous_budget": 1000,
+        "new_budget": 1200
+      }
+    }
+  ]
+}

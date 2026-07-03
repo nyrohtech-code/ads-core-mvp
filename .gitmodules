@@ -1,0 +1,6 @@
+[submodule "src/mcp/meta-ads-mcp"]
+	path = src/mcp/meta-ads-mcp
+	url = https://github.com/pipeboard-co/meta-ads-mcp.git
+[submodule "src/mcp/mcp-google-ads"]
+	path = src/mcp/mcp-google-ads
+	url = https://github.com/cohnen/mcp-google-ads.git

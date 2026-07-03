@@ -1,0 +1,129 @@
+version: '3.8'
+
+services:
+  # ============================================================================
+  # n8n - Workflow Automation Engine
+  # ============================================================================
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: ads-core-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER:-admin}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD:-changeme}
+      - N8N_HOST=${N8N_HOST:-localhost}
+      - N8N_PORT=${N8N_PORT:-5678}
+      - N8N_PROTOCOL=http
+      - NODE_ENV=${NODE_ENV:-development}
+      - WEBHOOK_URL=http://localhost:5678/
+      - EXECUTIONS_DATA_PRUNE=true
+      - EXECUTIONS_DATA_MAX_AGE=336
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - ads-core-network
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:5678/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  # ============================================================================
+  # PostgreSQL - Database (Optional: if using local instead of Supabase)
+  # ============================================================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: ads-core-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-ads_core_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./config/supabase_schema.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - ads-core-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================================
+  # Redis - Cache & Queue
+  # ============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: ads-core-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ads-core-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================================
+  # Adminer - Database Management UI (Optional)
+  # ============================================================================
+  adminer:
+    image: adminer:latest
+    container_name: ads-core-adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ads-core-network
+
+volumes:
+  n8n_data:
+    driver: local
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  ads-core-network:
+    driver: bridge
+
+# ============================================================================
+# COMO USAR:
+# ============================================================================
+# 1. Configurar .env (copiar de .env.example)
+# 2. Rodar:
+#    docker-compose up -d
+#
+# 3. Acessar:
+#    - n8n: http://localhost:5678
+#    - Adminer: http://localhost:8080
+#    - PostgreSQL: localhost:5432
+#    - Redis: localhost:6379
+#
+# 4. Parar:
+#    docker-compose down
+#
+# 5. Ver logs:
+#    docker-compose logs -f n8n
+#
+# ============================================================================
+# NOTA: Esse compose setup é para DESENVOLVIMENTO LOCAL.
+# Para PRODUÇÃO, usar valores de .env seguro e possivelmente Supabase cloud.
+# ============================================================================

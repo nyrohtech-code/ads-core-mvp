@@ -1,0 +1,51 @@
+{
+  "analysis_timestamp": "2026-07-03T15:08:16.947901",
+  "total_campaigns": 4,
+  "decisions": [
+    {
+      "campaign_id": "campaign_001",
+      "campaign_name": "E-commerce - Black Friday",
+      "platform": "meta",
+      "current_roas": 2.98,
+      "current_cpa": 228,
+      "current_ctr": 3.0,
+      "action": "KEEP",
+      "reasoning": "Performance normal, manter como est\u00e1",
+      "priority": "LOW"
+    },
+    {
+      "campaign_id": "campaign_002",
+      "campaign_name": "SaaS - Lead Gen",
+      "platform": "meta",
+      "current_roas": 1.88,
+      "current_cpa": 266.67,
+      "current_ctr": 5.0,
+      "action": "REDUCE_BID",
+      "reasoning": "ROAS (1.88x) abaixo do esperado, reduzir bids",
+      "priority": "MEDIUM"
+    },
+    {
+      "campaign_id": "google_campaign_001",
+      "campaign_name": "Search - Product Launch",
+      "platform": "google",
+      "current_roas": 2.5,
+      "current_cpa": 240,
+      "current_ctr": 2.5,
+      "action": "KEEP",
+      "reasoning": "Performance normal, manter como est\u00e1",
+      "priority": "LOW"
+    },
+    {
+      "campaign_id": "google_campaign_002",
+      "campaign_name": "Shopping - E-commerce",
+      "platform": "google",
+      "current_roas": 4.1,
+      "current_cpa": 121.79,
+      "current_ctr": 5.0,
+      "action": "SCALE_20",
+      "reasoning": "ROAS excelente (4.10x), escalar 20%",
+      "priority": "HIGH"
+    }
+  ],
+  "summary": "An\u00e1lise de 4 campanhas. 2 requerem a\u00e7\u00e3o."
+}

@@ -1,0 +1,144 @@
+{
+  "name": "WORKFLOW 2: Claude Analysis & Decision (FASE 3)",
+  "description": "Analisar dados com Claude e gerar decisões automaticamente",
+  "nodes": [
+    {
+      "parameters": {
+        "expression": "{{ $now.toISO() }}"
+      },
+      "name": "Trigger (Every 6h)",
+      "type": "n8n-nodes-base:cron",
+      "typeVersion": 1,
+      "position": [100, 200],
+      "cronExpression": "0 */6 * * *"
+    },
+    {
+      "parameters": {
+        "url": "https://{{ $env.SUPABASE_URL }}/rest/v1/campaigns",
+        "method": "GET",
+        "authentication": "n8n-nodes-base:httpHeaderAuth"
+      },
+      "name": "Get Campaigns",
+      "type": "n8n-nodes-base:httpRequest",
+      "typeVersion": 1,
+      "position": [300, 200]
+    },
+    {
+      "parameters": {
+        "url": "https://{{ $env.SUPABASE_URL }}/rest/v1/performance_logs",
+        "method": "GET",
+        "authentication": "n8n-nodes-base:httpHeaderAuth",
+        "qs": {
+          "order": "date.desc",
+          "limit": "1000"
+        }
+      },
+      "name": "Get Performance Data",
+      "type": "n8n-nodes-base:httpRequest",
+      "typeVersion": 1,
+      "position": [300, 350]
+    },
+    {
+      "parameters": {
+        "command": "python3 src/scripts/claude_analyzer.py"
+      },
+      "name": "Run Claude Analysis",
+      "type": "n8n-nodes-base:executeCommand",
+      "typeVersion": 1,
+      "position": [500, 250]
+    },
+    {
+      "parameters": {
+        "url": "https://{{ $env.SUPABASE_URL }}/rest/v1/ai_decisions",
+        "method": "POST",
+        "authentication": "n8n-nodes-base:httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "decisions",
+              "value": "={{ $json.decisions }}"
+            }
+          ]
+        }
+      },
+      "name": "Save Decisions",
+      "type": "n8n-nodes-base:httpRequest",
+      "typeVersion": 1,
+      "position": [700, 250]
+    },
+    {
+      "parameters": {
+        "channel": "#ads-notifications",
+        "message": "🤖 Claude Analysis Complete\\n{{ $json.summary }}"
+      },
+      "name": "Notify Slack",
+      "type": "n8n-nodes-base:slack",
+      "typeVersion": 1,
+      "position": [900, 250]
+    }
+  ],
+  "connections": {
+    "Trigger (Every 6h)": {
+      "main": [
+        [
+          {
+            "node": "Get Campaigns",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Performance Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Campaigns": {
+      "main": [
+        [
+          {
+            "node": "Run Claude Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Performance Data": {
+      "main": [
+        [
+          {
+            "node": "Run Claude Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Claude Analysis": {
+      "main": [
+        [
+          {
+            "node": "Save Decisions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Decisions": {
+      "main": [
+        [
+          {
+            "node": "Notify Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true
+}
