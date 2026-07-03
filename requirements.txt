@@ -17,18 +17,18 @@ pandas==2.1.0
 numpy==1.24.0
 python-dateutil==2.8.2
 
-# Open-source Repos - Git Dependencies
+# Open-source Repos - Git Dependencies (commented out: failing during build)
 # Meta Ads MCP from Pipeboard
-git+https://github.com/Pipeboard/meta-ads-mcp.git#egg=meta-ads-mcp
+# git+https://github.com/Pipeboard/meta-ads-mcp.git#egg=meta-ads-mcp
 
 # Google Ads MCP from Cohnen
-git+https://github.com/cohnen/mcp-google-ads.git#egg=mcp-google-ads
+# git+https://github.com/cohnen/mcp-google-ads.git#egg=mcp-google-ads
 
 # Agentic Ads - Creative Generation from Shree2604
-git+https://github.com/Shree2604/Agentic-Ads.git#egg=agentic-ads
+# git+https://github.com/Shree2604/Agentic-Ads.git#egg=agentic-ads
 
 # Ad Factory Agent - Automated Video Ads from agency-ai-solutions
-git+https://github.com/agency-ai-solutions/ad-factory-agent.git#egg=ad-factory-agent
+# git+https://github.com/agency-ai-solutions/ad-factory-agent.git#egg=ad-factory-agent
 
 # Monitoring & Logging
 python-json-logger==2.0.7
